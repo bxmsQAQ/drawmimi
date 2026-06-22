@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenAI 图床 / 图片生成工作台</title>
+  <style>
+    :root {
+      --bg: #08111f;
+      --bg2: #0d1728;
+      --panel: rgba(17, 24, 39, 0.88);
+      --panel-2: rgba(15, 23, 42, 0.9);
+      --card: rgba(255, 255, 255, 0.04);
+      --card-hover: rgba(255, 255, 255, 0.07);
+      --border: rgba(148, 163, 184, 0.18);
+      --border-strong: rgba(96, 165, 250, 0.3);
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --muted-2: #64748b;
+      --primary: #60a5fa;
+      --primary-strong: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #34d399;
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+      --radius: 18px;
+      --radius-sm:  {-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(16, 185, 129, 0.10), transparent 24%),
+        linear-gradient(180deg, #020617 0%, var(--bg) 42%, #020617 100%);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1500px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 30px;
+      letter-spacing: 0.5px;
+    }
+
+    .hero p      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      font-size: 13px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 430px minmax(0, 1fr) 330px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    @media (max-width: 1320px) {
+      .layout {
+        grid-template-columns: 430px minmax(0, 1fr);
+      }
+      .history-panel {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 980px) {
+      body { padding: 16px; }
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(17, 24, 39, 0.92), rgba(15, 23, 42, 0.88));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(14px);
+    }
+
+    .panel-inner {
+      padding: 16px;
+    }
+
+    .section {
+      margin-bottom: 14px;
+    }
+
+   section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.04);
+      transition: 0.2s;
+    }
+
+    .section-head:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(96, 165, 250, 0.14);
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 15px;
+      letter-spacing: 0.2px;
+    }
+
+    .section-head .meta {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .section-body {
+      margin-top: 12px;
+      display: block;
+    }
+
+    .collapsed .section-body {
+      display: none;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: #dbeafe;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid rgba(148,163,184,0.18);
+      background: rgba(2, 6, 23, 0.8);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 11px 12px;
+      outline: none;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: #64748b;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: rgba(96,165,250,0.55);
+      box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 560px) {
+      .row, .row-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 11px 14px;
+      cursor: pointer;
+      color: white;
+      font-weight: 650;
+      letter-spacing: 0.2px;
+      transition: 0.2s ease;
+      background: linear-gradient(135deg, var(--primary-strong), var(--primary));
+      box-shadow: 0 12px 24px rgba(59, 130, 246, 0.22);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      background: linear-gradient(135deg, var(--primary-hover), var(--primary-strong));
+    }
+
+    .btn.secondary {
+      background: rgba(51, 65, 85, 0.92);
+      box-shadow: none;
+      border: 1px solid rgba(148,163,184,0.14);
+    }
+
+    .btn.secondary:hover {
+      background: rgba(71, 85, 105, 0.95);
+    }
+
+    .btn.danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      box-shadow: 0 12px 24px rgba(239, 68, 68, 0.18);
+    }
+
+    .btn.danger:hover {
+      filter: brightness(1.04);
+    }
+
+    .stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .hint {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .small-note {
+      font-size: 12px;
+      color: var(--muted-2);
+      line-height: 1.55;
+    }
+
+    .status {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .status.success { color: var(--success); }
+    .status.error { color: var(--danger); }
+
+    .dropzone {
+      border: 1px dashed rgba(148,163,184,0.28);
+      border-radius: 16px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 18px;
+      transition: 0.2s;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .dropzone:hover {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(96,165,250,0.35);
+    }
+
+    .dropzone.dragover {
+      border-color: rgba(96,165,250,0.8);
+      background: rgba(59,130,246,0.14);
+      box-shadow: inset 0 0 0 1px rgba(96,165,250,0.25);
+    }
+
+    .dropzone img {
+      max-width: 100%;
+      max-height: 260px;
+      object-fit: contain;
+      border-radius: 12px;
+      display: block;
+    }
+
+    .dropzone .placeholder {
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .main-preview {
+      padding: 16px;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .preview-header h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .image-stage {
+      min-height: -radius rgba,184,0.16);
+      background:
+        radial-gradient(circle at center, rgba(96,165,250,0.08), transparent 46%),
+        rgba(255,255,255,0.02);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .image-stage img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit:;
+: block;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--muted);
+      padding: 28px;
+      line-height: 1.8;
+    }
+
+    .json-box {
+      margin-top: 14px;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: rgba(2,6,23,0.72);
+      border: 1px solid rgba(148,163,184,0.14);
+      border-radius: 14px;
+      padding: 14px;
+      color: #dbeafe;
+      overflow: auto;
+      max-height: 240px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .history-panel .panel-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 920px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .history-item {
+      border: 1px solid rgba(148,163,184,0.16);
+      background: rgba(255,255,255,0.03);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: 0.2s;
+    }
+
+   -item-color: rgba(96,165,250,0.25);
+      background: rgba(255,255,255,0.045);
+      transform: translateY(-1px);
+    }
+
+    .history-thumb {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      background: #020617;
+      display: block;
+    }
+
+    .history-content {
+      padding: 10px;
+    }
+
+    .history-meta {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+      margin-bottom: 10px;
+    }
+
+    .history-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .history-actions button {
+      padding: 9px 8px;
+      font-size: 12px;
+      border-radius: 10px;
+    }
+
+    details {
+      border: 1px solid rgba(148,163,184,0.12);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.025);
+      padding: 12px;
+    }
+
+    summary {
+      cursor: pointer;
+      color: #dbeafe;
+      font-weight: 600;
+    }
+   </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <div>
+        <h1>OpenAI 图床 / 图片生成工作台</h1>
+        <p>一个更顺手的单页面板：支持生成、编辑、拖拽上传、历史管理与结果预览。</p>
+      </div>
+      <div class="toolbar">
+        <div class="chip">OpenAI 风格接口</div>
+        <div class="chip">支持本地历史记录</div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- 左侧配置 -->
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="section" id="apiSection">
+            <div class="section-head" onclick="toggleSection('apiSection')">
+              <h2>API 设置</h2>
+              <div class="meta">可收起</div>
+            </div>
+            <div class="section-body">
+              <div class="form-group">
+                <label for="apiBase">API Base</label>
+                <input id="apiBase" type="text" value="https://api.openai.com" placeholder="https://api.openai.com">
+              </div>
+              <div class="row">
+                <div class="form-group">
+                  <label for="apiKey">API Key</label>
+                  <input id="apiKey" type="password" placeholder="sk-xxxx">
+                </div>
+                <div class="form-group">
+                  <label for="endpointType">接口类型</label>
+                  <select id="endpointType">
+                    <option value="generations" selected>文生图 / generations</option>
+                    <option value="edits">图生图 / edits</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="model">模型</label>
+                <input id="model" type="text" value="gpt-image-1" placeholder="gpt-image-1">
+              </div>
+              <div class="hint">建议生产环境使用你自己的后端代理，不要直接把 Key 暴露在浏览器里。</div>
+            </div>
+          </div>
+
+          <div class="section" id="promptSection">
+            <div class="section-head" onclick="toggleSection('promptSection')">
+              <h2>提示词设置</h2>
+              <div class="meta">可收起</div>
+            </div>
+            <div class="section-body">
+              <div class="form-group">
+                <label for="prompt">提示词描述</label>
+                <textarea id="prompt" placeholder="例如：一只穿着宇航服的橘猫站在月球表面，背景是地球，电影海报风格，超清细节"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="negativePrompt">反向提示词描述</label>
+                <textarea id="negativePrompt" placeholder="例如：模糊，低质量，水印，文字，畸形，多余手指"></textarea>
+              </div>
+
+              <details open>
+                <summary>系统提示词注入（可收起）</summary>
+                <div class="form-group" style="margin-top:12px;">
+                  <label for="systemPrompt">系统提示词</label>
+                  <textarea id="systemPrompt">你是一个专业的图片生成提示词优化器，请将用户输入整理为高质量、结构化、适合图像模型的描述。</textarea>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <div class="section" id="paramSection">
+            <div class="section-head" onclick="toggleSection('paramSection')">
+              <h2>生成参数</h2>
+              <div class="meta">可收起</div>
+            </div>
+            <div class="section-body">
+              <div class="row">
+                <div class="form-group">
+                  <label for="ratio">比例选择</label>
+                  <select id="ratio">
+                    <option value="1:1">1:1</option>
+                    <option value="3:4">3:4</option>
+                    <option value="4:3">4:3</option>
+                    <option value="16:9">16:9</option>
+                    <option value="9:16">9:16</option>
+                    <option value="21:9">21:9</option>
+                  </select>
+                </div>
+                <div
+class="form-group">
+                  <label for="quality">画质选择</label>
+                  <select id="quality">
+                    <option value="standard">标准</option>
+                    <option value="hd" selected>高清</option>
+                    <option value="ultra">超清</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="form-group">
+                  <label for="seed">Seed（可选）</label>
+                  <input id="seed" type="number" placeholder="可选">
+                </div>
+                <div class="form-group">
+                  <label for="count">返回数量</label>
+                  <input id="count" type="number" min="1" max="4" value="1">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>上传参考图 / 编辑图</label>
+                <div id="dropzone" class="dropzone">
+                  <div id="dropText" class="placeholder">
+                    将图片拖拽到这里，或点击选择文件<br>
+                    <span class="small-note">支持 PNG / JPG / WEBP</span>
+                  </div>
+                  <img id="uploadPreview" alt="上传预览" style="display:none;" />
+                </div>
+                <input id="fileInput" type="file" accept="image/*" style="display:none;">
+              </div>
+
+              <div class="stack">
+                <button class="btn" onclick="sendRequest()">开始请求 / 生成图片</button>
+                <button class="btn secondary" onclick="fillDemo()">填充示例内容</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 中间预览 -->
+      <div class="panel">
+        <div class="main-preview">
+          <div class="preview-header">
+            <h2>返回的图片显示区域</h2>
+            <div class="status" id="status">等待请求...</div>
+          </div>
+
+          <div class="image-stage" id="imageStage">
+            <div class="empty-state" id="placeholder">
+              图片结果会显示在这里<br>
+              支持 URL 或 base64 格式返回
+            </div>
+            <img id="resultImage" alt="生成结果" style="display:none;" />
+          </div>
+
+          <div class="json-box">
+            <h3 style="margin:14px 0 8px;font-size:14px;">接口返回结果</h3>
+            <pre id="rawResult">暂无数据</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧历史 -->
+      <div class="panel history-panel">
+        <div class="panel-inner">
+          <div class="preview-header" style="margin-bottom:0;">
+            <h2>历史记录</h2>
+            <button class="btn danger" style="width:auto; padding:9px 14px;" onclick="clearHistory()">清空</button>
+          </div>
+          <div class="small-note">点击可复制链接、删除或重新生成。</div>
+          <div class="history-list" id="historyList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let history = JSON.parse(localStorage.getItem('image_history') || '[]');
+
+    const apiBaseEl = document.getElementById('apiBase');
+    const apiKeyEl = document.getElementById('apiKey');
+    const endpointTypeEl = document.getElementById('endpointType');
+    const modelEl = document.getElementById('model');
+    const promptEl = document.getElementById('prompt');
+    const negativePromptEl = document.getElementById('negativePrompt');
+    const systemPromptEl = document.getElementById('systemPrompt');
+    const ratioEl = document.getElementById('ratio');
+    const qualityEl = document.getElementById('quality');
+    const seedEl = document.getElementById('seed');
+    const countEl = document.getElId('status');
+    const rawResultEl = document.getElementById('rawResult');
+    const resultImageEl = document.getElementById('resultImage');
+    const placeholderEl = document.getElementById('placeholder');
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const uploadPreview = document.getElementById('uploadPreview');
+    const dropText = document.getElementById('dropText');
+
+    let uploadedFile = null;
+    let uploadedPreviewUrl = '';
+
+    function saveHistory() {
+      localStorage.setItem('image_history', JSON.stringify(history));
+      renderHistory();
+    }
+
+    function addHistoryItem(item) {
+      history.unshift({ ...item, id: Date.now() + Math.random() });
+      history = history.slice(0, 30);
+      saveHistory();
+    }
+
+    function render      list documentByhistoryList');
+      list.innerHTML =      if (!history.length) {
+        list.innerHTML = '<div class="small-note">暂无历史记录</div>';
+        return;
+      }
+
+      history.forEach(item => {
+        const wrap = document.createElement('div');
+        wrap.className = 'history-item';
+        wrap.innerHTML = `
+          <img class="history-thumb" src="${item.image}" alt="history">
+          <div class="history-content">
+            <div class="history-meta">
+              <div><b>${item.model || 'unknown'}</b> · ${item.time || ''}</div>
+              <div>${(0, 60))}</div>
+            </div>
+            <div class="history-actions">
+              <button class="btn secondary" onclick="copyLink('${encodeURIComponent(item.image)}')">复制链接</button>
+              <button class="btn secondary" onclick='regenerate(${JSON.stringify(item.prompt || "")}, ${JSON.stringify(item.negativePrompt || "")})'>重生成</button>
+              <button class="btn danger" onclick="deleteHistory('${item.id}')">删除</button>
+            </div>
+          </div>
+        `;
+        list.appendChild(wrap);
+      });
+    }
+
+    function deleteHistory(id) {
+      history = history.filter(x => String(x.id) !== String(id));
+      saveHistory();
+    }
+
+    function clearHistory() {
+      history = [];
+      saveHistory();
+    }
+
+    function copyLink(encodedUrl) {
+      const url = decodeURIComponent(encodedUrl);
+      navigator.clipboard.writeText(url)
+        .then(() => alert('已复制链接'))
+        .catch(() => prompt('复制失败，请手动复制：', url));
+    }
+
+    function regenerate(prompt, negativePrompt) {
+      promptEl.value = prompt || '';
+      negativePromptEl.value = negativePrompt || '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleSection(id) {
+      document.getElementById(id).classList.toggle('collapsed');
+    }
+
+    function fillDemo() {
+      promptEl.value = '一只穿着宇航服的橘猫站在月球，是地球，电影海报风格，超清细节';
+      negativePromptEl.value = '模糊，低质量，水印，文字，畸形，多余手指';
+      ratioEl.value = '1:1';
+      qualityEl.value = 'hd';
+      countEl.value = 1;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, s => ({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#39;'
+      }[s]));
+    }
+
+    function previewLocalImage(file) {
+      uploadedFile = file;
+      const reader = new FileReader();
+      reader.onload = e => {
+        uploadedPreviewUrl = e.target.result;
+        uploadPreview.src = uploadedPreviewUrl;
+        uploadPreview.style.display = 'block';
+        dropText.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    dropzone.addEventListener('click', () => fileInput.click());
+ file(' if.target.files?.[0]) previewLocalImage(e.target.files[0]);
+    });
+
+    dropzone.addEventListener('dragover', e => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('dragover');
+    });
+
+    dropzone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      const file = e.dataTransfer.files?.[0];
+      if (file) previewLocalImage(file);
+    });
+
+    async function sendRequest() {
+      const apiBase = apiBaseEl.value.trim().replace(/\/$/, '');
+      const apiKey = apiKeyEl.value.trim();
+      const endpointType = endpointTypeEl.value;
+      const model = modelEl.value.trim();
+      const prompt = promptEl.value.trim();
+      const negativePrompt = negativePromptEl.value.trim();
+      const systemPrompt = systemPromptEl.value.trim();
+      const ratio = ratioEl.value;
+      const quality = qualityEl.value;
+      const seed = seedEl.value.trim();
+      const count = parseInt(countEl.value || '1', 10);
+
+      statusEl.textContent = '请求中...';
+      statusEl.className = 'status';
+      rawResultEl.textContent = '正在请求接口...';
+
+      if (!prompt && endpointType === 'generations') {
+        statusEl.textContent = '请填写提示词';
+        statusEl.className = 'status error';
+        return;
+      }
+
+      try {
+        let res;
+        let url = '';
+
+        if (endpointType === 'generations') {
+          url = `${apiBase}/v1/images/generations`;
+
+          const body = {
+            model,
+            prompt,
+            size: ratio,
+            quality,
+            n: count
+          };
+
+          if (seed) body.seed = Number(seed);
+          if (systemPrompt) body.system_prompt =Promptnegative_prompt res = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {})
+            },
+            body: JSON.stringify(body)
+          });
+        {
+ if (!uploadedFile) {
+            statusEl.textContent = '图生图模式需要先上传一张图片';
+            statusEl.className = 'status error';
+            return;
+          }
+          url = `${apiBase}/v1/images/edits`;
+          const formData = new FormData();
+          formData.append('model', model);
+          formData.append('prompt', prompt);
+          formData.append('size', ratio);
+          formData.append('quality', quality);
+          formData.append('n', String(count));
+          if (seed) formData.append('seed', String(Number(seed)));
+          if (systemPrompt) formData.append('system_prompt', systemPrompt);
+          if (negativePrompt) formData.append('negative_prompt', negativePrompt);
+          formData.append('image', uploadedFile);
+
+          res = await fetch(url, {
+            method: 'POST',
+            headers: {
+              ...(apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {})
+            },
+            body: formData
+          });
+        }
+
+        const contentType = res.headers.get('content-type') || '';
+        const data = contentType.includes('application/json')
+          ? await res.json()
+          : { raw: await res.text() };
+
+        rawResultEl.textContent = JSON.stringify(data, null, 2);
+
+        if (!res.ok) {
+          statusEl.textContent = `请求失败：HTTP ${res.status}`;
+          statusEl.className = 'status error';
+          return;
+        }
+
+        const imgUrl =
+          data.data?.[0]?.url ||
+          data.image_url ||
+          data.url ||
+          data.result?.url ||
+          data.images?.[0]?.url;
+
+        const base64 =
+          data.data?.[0]?.b64_json ||
+          data.base64 ||
+          data.image_base64 ||
+          data.result?.base64 ||
+          data.images?.[0]?.base64;
+
+        const finalImage = imgUrl
+          ? imgUrl
+          : (base64 ? (base64.startsWith('data:') ? base64 : `data:image/png;base64,${base64}`) : '');
+
+        if (finalImage) {
+          resultImageEl.src = finalImage;
+          resultImageEl.style.display = 'block';
+          placeholderEl.style.display = 'none';
+          statusEl.textContent = '图片获取成功';
+          statusEl.className = 'status success';
+
+          addHistoryItem({
+            image: finalImage,
+            prompt,
+            negativePrompt,
+            model,
+            time: new Date().toLocaleString()
+          });
+        } else {
+          statusEl.textContent = '请求成功，但未识别到图片字段';
+          statusEl.className = 'status error';
+        }
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = '请求异常：' + (err?.message || err);
+        statusEl.className = 'status error';
+        rawResultEl.textContent = String(err);
+      }
+    }
+
+    renderHistory();
+  </script>
+</body>
+</html>
