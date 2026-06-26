@@ -64,15 +64,12 @@
         transform: translate3d(0, 0, 0) scale(0.85);
         opacity: 0;
       }
-
       12% {
         opacity: 1;
       }
-
       76% {
         opacity: 0.56;
       }
-
       100% {
         transform: translate3d(var(--drift), -128vh, 0) scale(0.1);
         opacity: 0;
@@ -111,7 +108,6 @@
         opacity: 0;
         transform: translateY(10px);
       }
-
       to {
         opacity: 1;
         transform: translateY(0);
@@ -457,12 +453,13 @@
 
   <main class="app">
     <div class="shell">
+
+      <!-- 首页 -->
       <section class="page active" id="homePage">
         <header>
           <h1>AI生图</h1>
           <div class="byline">by&nbsp;&nbsp; bxmsQAQ</div>
         </header>
-
         <div class="home-menu">
           <button class="home-btn" data-route="apiPage">API设置</button>
           <button class="home-btn" data-route="promptPage">系统提示词（prompt）设置</button>
@@ -471,91 +468,81 @@
         </div>
       </section>
 
+      <!-- API设置页 -->
       <section class="page" id="apiPage">
         <div class="topbar">
           <h2>API设置</h2>
           <button class="ghost" data-route="homePage">返回首页</button>
         </div>
-
         <div class="card">
           <div class="grid">
             <div class="field full">
               <label for="baseUrl">接口地址（Base URL）</label>
               <input id="baseUrl" placeholder="例如：https://api.openai.com/v1" />
             </div>
-
             <div class="field full">
               <label for="apiKey">API Key（密钥）</label>
               <input id="apiKey" type="password" placeholder="请输入 API Key" />
             </div>
-
             <div class="field">
               <label for="modelInput">模型</label>
               <input id="modelInput" placeholder="例如：gpt-image-1 / dall-e-3" />
             </div>
-
             <div class="field">
               <label for="modelSelect">拉取后选择模型</label>
               <select id="modelSelect">
                 <option value="">尚未拉取模型</option>
               </select>
             </div>
-
             <div class="field">
               <label for="temperature">温度</label>
               <input id="temperature" type="number" min="0" max="2" step="0.1" value="1" />
             </div>
           </div>
-
           <div class="actions">
             <button id="fetchModels">拉取</button>
             <button id="testApi">测试</button>
             <button class="ok" id="saveApi">保存</button>
           </div>
-
           <div class="status" id="apiStatus"></div>
         </div>
       </section>
 
+      <!-- 系统提示词页 -->
       <section class="page" id="promptPage">
         <div class="topbar">
           <h2>系统提示词设置</h2>
           <button class="ghost" data-route="homePage">返回首页</button>
         </div>
-
         <div class="card">
           <div class="field">
             <label for="systemPrompt">系统提示词</label>
             <textarea class="prompt-box" id="systemPrompt"></textarea>
           </div>
-
           <div class="actions">
             <button class="ok" id="savePrompt">保存</button>
             <button class="ghost" id="resetPrompt">恢复默认</button>
           </div>
-
           <div class="status" id="promptStatus"></div>
         </div>
       </section>
 
+      <!-- 生图页 -->
       <section class="page" id="generatePage">
         <div class="topbar">
           <h2>生图，启动！</h2>
           <button class="ghost" data-route="homePage">返回首页</button>
         </div>
-
         <div class="card">
           <div class="grid">
             <div class="field full">
               <label for="userPrompt">提示词</label>
               <textarea id="userPrompt" placeholder="请输入你想生成的画面描述"></textarea>
             </div>
-
             <div class="field full">
               <label for="negativePrompt">反向提示词</label>
               <textarea id="negativePrompt" placeholder="请输入不想出现的内容，例如 low quality, blurry"></textarea>
             </div>
-
             <div class="field full">
               <label>以图生图</label>
               <div class="preview-row">
@@ -564,51 +551,45 @@
                 <button class="ghost" id="clearImage" type="button">清除图片</button>
               </div>
             </div>
-
             <div class="field full">
               <label>图片比例</label>
               <div class="ratio-wrap" id="ratioWrap"></div>
             </div>
-
             <div class="field">
               <label for="customSize">自定义尺寸</label>
               <input id="customSize" placeholder="例如：1024x1536" />
             </div>
-
             <div class="field">
               <label for="imageCount">生图数量</label>
               <input id="imageCount" type="number" min="1" max="10" value="1" />
             </div>
           </div>
-
           <div class="actions">
             <button class="ok" id="generateBtn">生成</button>
             <button id="regenerateBtn">重新生成</button>
           </div>
-
           <div class="status" id="generateStatus"></div>
           <div class="gallery" id="resultGallery"></div>
         </div>
       </section>
 
+      <!-- 存档区页 -->
       <section class="page" id="archivePage">
         <div class="topbar">
           <h2>存档区</h2>
           <button class="ghost" data-route="homePage">返回首页</button>
         </div>
-
         <div class="card">
           <div class="tabs">
             <button class="tab active" data-tab="archive">存档</button>
             <button class="tab" data-tab="trash">回收站</button>
           </div>
-
           <div class="gallery" id="archiveGallery"></div>
           <div class="gallery" id="trashGallery" style="display:none;"></div>
         </div>
       </section>
-    </div>
 
+    </div>
     <footer>本网站免费使用︱禁止商用、二传、镜像搬运</footer>
   </main>
 
@@ -632,14 +613,14 @@ STRICT RULES:
     };
 
     const RATIO_OPTIONS = [
-      { label: "1:1 方图", size: "1024x1024" },
-      { label: "3:4 竖图", size: "1024x1365" },
-      { label: "4:3 横图", size: "1365x1024" },
+      { label: "1:1 方图",      size: "1024x1024" },
+      { label: "3:4 竖图",      size: "1024x1365" },
+      { label: "4:3 横图",      size: "1365x1024" },
       { label: "9:16 手机竖屏", size: "1024x1792" },
-      { label: "16:9 宽屏", size: "1792x1024" },
-      { label: "2:3 海报", size: "1024x1536" },
-      { label: "3:2 横幅", size: "1536x1024" },
-      { label: "自定义", size: "custom" }
+      { label: "16:9 宽屏",     size: "1792x1024" },
+      { label: "2:3 海报",      size: "1024x1536" },
+      { label: "3:2 横幅",      size: "1536x1024" },
+      { label: "自定义",         size: "custom"    }
     ];
 
     const $ = (id) => document.getElementById(id);
@@ -649,44 +630,37 @@ STRICT RULES:
     let lastGenerationPayload = null;
     let generatedImages = [];
 
+    /* ── 粒子背景 ── */
     function createParticles() {
       const box = $("particles");
-
       for (let i = 0; i < 95; i++) {
         const dot = document.createElement("span");
         dot.className = "particle";
-        dot.style.setProperty("--size", `${Math.random() * 3.8 + 1.4}px`);
-        dot.style.setProperty("--left", `${Math.random() * 100}%`);
-        dot.style.setProperty("--alpha", `${Math.random() * 0.55 + 0.22}`);
+        dot.style.setProperty("--size",     `${Math.random() * 3.8 + 1.4}px`);
+        dot.style.setProperty("--left",     `${Math.random() * 100}%`);
+        dot.style.setProperty("--alpha",    `${Math.random() * 0.55 + 0.22}`);
         dot.style.setProperty("--duration", `${Math.random() * 16 + 9}s`);
-        dot.style.setProperty("--delay", `${Math.random() * -28}s`);
-        dot.style.setProperty("--drift", `${(Math.random() - 0.5) * 190}px`);
+        dot.style.setProperty("--delay",    `${Math.random() * -28}s`);
+        dot.style.setProperty("--drift",    `${(Math.random() - 0.5) * 190}px`);
         box.appendChild(dot);
       }
     }
 
+    /* ── 路由 ── */
     function routeTo(pageId) {
-      document.querySelectorAll(".page").forEach((page) => {
-        page.classList.remove("active");
-      });
-
+      document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
       $(pageId).classList.add("active");
       window.scrollTo({ top: 0, behavior: "smooth" });
-
-      if (pageId === "archivePage") {
-        renderArchive();
-      }
-
+      if (pageId === "archivePage") renderArchive();
       location.hash = pageId === "homePage" ? "" : pageId;
     }
 
     function initRoute() {
       const hashPage = location.hash.replace("#", "");
-      if (hashPage && $(hashPage)) {
-        routeTo(hashPage);
-      }
+      if (hashPage && $(hashPage)) routeTo(hashPage);
     }
 
+    /* ── 状态提示 ── */
     function showStatus(id, message, type = "") {
       const el = $(id);
       el.textContent = message;
@@ -699,6 +673,7 @@ STRICT RULES:
       el.className = "status";
     }
 
+    /* ── 设置存取 ── */
     function loadSettings() {
       const saved = JSON.parse(localStorage.getItem("aiImageSettings") || "{}");
       return { ...DEFAULT_SETTINGS, ...saved };
@@ -709,22 +684,23 @@ STRICT RULES:
     }
 
     function applySettingsToForm() {
-      const settings = loadSettings();
-      $("baseUrl").value = settings.baseUrl;
-      $("apiKey").value = settings.apiKey;
-      $("modelInput").value = settings.model;
-      $("temperature").value = settings.temperature;
+      const s = loadSettings();
+      $("baseUrl").value    = s.baseUrl;
+      $("apiKey").value     = s.apiKey;
+      $("modelInput").value = s.model;
+      $("temperature").value = s.temperature;
     }
 
     function getSettingsFromForm() {
       return {
-        baseUrl: $("baseUrl").value.trim().replace(/\/+$/, ""),
-        apiKey: $("apiKey").value.trim(),
-        model: $("modelInput").value.trim(),
+        baseUrl:     $("baseUrl").value.trim().replace(/\/+$/, ""),
+        apiKey:      $("apiKey").value.trim(),
+        model:       $("modelInput").value.trim(),
         temperature: Number($("temperature").value || 1)
       };
     }
 
+    /* ── 系统提示词 ── */
     function getSystemPrompt() {
       return localStorage.getItem("aiSystemPrompt") || DEFAULT_PROMPT;
     }
@@ -733,16 +709,11 @@ STRICT RULES:
       localStorage.setItem("aiSystemPrompt", value);
     }
 
+    /* ── API 请求封装 ── */
     async function apiFetch(path, options = {}) {
       const settings = getSettingsFromForm();
-
-      if (!settings.baseUrl) {
-        throw new Error("请填写接口地址 Base URL。");
-      }
-
-      if (!settings.apiKey) {
-        throw new Error("请填写 API Key。");
-      }
+      if (!settings.baseUrl) throw new Error("请填写接口地址 Base URL。");
+      if (!settings.apiKey)  throw new Error("请填写 API Key。");
 
       const response = await fetch(`${settings.baseUrl}${path}`, {
         ...options,
@@ -754,33 +725,25 @@ STRICT RULES:
 
       const text = await response.text();
       let data = null;
-
-      try {
-        data = text ? JSON.parse(text) : null;
-      } catch {
-        data = text;
-      }
+      try { data = text ? JSON.parse(text) : null; } catch { data = text; }
 
       if (!response.ok) {
         const detail =
           typeof data === "object" && data
             ? data.error?.message || data.message || JSON.stringify(data, null, 2)
             : text || response.statusText;
-
         throw new Error(`HTTP ${response.status} ${response.statusText}\n${detail}`);
       }
 
       return data;
     }
 
+    /* ── 拉取模型 ── */
     async function fetchModels() {
       clearStatus("apiStatus");
       showStatus("apiStatus", "正在拉取模型...", "warn");
 
-      const data = await apiFetch("/models", {
-        method: "GET"
-      });
-
+      const data   = await apiFetch("/models", { method: "GET" });
       const models = Array.isArray(data?.data) ? data.data : [];
 
       if (!models.length) {
@@ -790,140 +753,139 @@ STRICT RULES:
 
       const select = $("modelSelect");
       select.innerHTML = `<option value="">请选择模型</option>`;
-
       models
         .map((item) => item.id || item.name)
         .filter(Boolean)
         .sort()
         .forEach((modelId) => {
-          const option = document.createElement("option");
-          option.value = modelId;
-          option.textContent = modelId;
-          select.appendChild(option);
+          const opt = document.createElement("option");
+          opt.value = modelId;
+          opt.textContent = modelId;
+          select.appendChild(opt);
         });
 
       showStatus("apiStatus", `模型拉取成功，共 ${models.length} 个。`, "success");
     }
 
+    /* ── 测试接口 ── */
     async function testApi() {
       clearStatus("apiStatus");
       showStatus("apiStatus", "正在测试接口...", "warn");
-
-      const data = await apiFetch("/models", {
-        method: "GET"
-      });
-
+      const data  = await apiFetch("/models", { method: "GET" });
       const count = Array.isArray(data?.data) ? data.data.length : 0;
       showStatus("apiStatus", `测试成功。接口可用，模型数量：${count}`, "success");
     }
 
+    /* ── 比例按钮 ── */
     function initRatios() {
       const wrap = $("ratioWrap");
       wrap.innerHTML = "";
-
       RATIO_OPTIONS.forEach((item, index) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = `ratio ${index === 0 ? "active" : ""}`;
-        button.textContent = item.label;
-        button.dataset.size = item.size;
-
-        button.addEventListener("click", () => {
-          document.querySelectorAll(".ratio").forEach((node) => {
-            node.classList.remove("active");
-          });
-
-          button.classList.add("active");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `ratio ${index === 0 ? "active" : ""}`;
+        btn.textContent = item.label;
+        btn.dataset.size = item.size;
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".ratio").forEach((n) => n.classList.remove("active"));
+          btn.classList.add("active");
           selectedSize = item.size;
         });
-
-        wrap.appendChild(button);
+        wrap.appendChild(btn);
       });
     }
 
+    /* ── 构建最终提示词 ── */
     function buildFinalPrompt(userPrompt, negativePrompt) {
-      let finalPrompt = `${getSystemPrompt()}
-
-USER VISUAL DESCRIPTION:
-${userPrompt}`;
-
-      if (negativePrompt.trim()) {
-        finalPrompt += `
-
-NEGATIVE PROMPT:
-${negativePrompt.trim()}`;
-      }
-
-      return finalPrompt;
+      let p = `${getSystemPrompt()}\n\nUSER VISUAL DESCRIPTION:\n${userPrompt}`;
+      if (negativePrompt.trim()) p += `\n\nNEGATIVE PROMPT:\n${negativePrompt.trim()}`;
+      return p;
     }
 
+    /* ── 生图 API 调用 ── */
     async function generateImages(payload) {
       const settings = getSettingsFromForm();
-
-      if (!settings.model) {
-        throw new Error("请填写或选择模型。");
-      }
+      if (!settings.model) throw new Error("请填写或选择模型。");
 
       if (payload.imageFile) {
         const form = new FormData();
-        form.append("model", settings.model);
+        form.append("model",  settings.model);
         form.append("prompt", payload.prompt);
-        form.append("n", String(payload.n));
-        form.append("size", payload.size);
-        form.append("image", payload.imageFile);
-
-        return apiFetch("/images/edits", {
-          method: "POST",
-          body: form
-        });
+        form.append("n",      String(payload.n));
+        form.append("size",   payload.size);
+        form.append("image",  payload.imageFile);
+        return apiFetch("/images/edits", { method: "POST", body: form });
       }
 
       return apiFetch("/images/generations", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: settings.model,
-          prompt: payload.prompt,
-          n: payload.n,
-          size: payload.size,
+          model:       settings.model,
+          prompt:      payload.prompt,
+          n:           payload.n,
+          size:        payload.size,
           temperature: settings.temperature
         })
       });
     }
 
+    /* ── 解析图片返回值 ── */
     function normalizeImageResponse(data) {
       const items = Array.isArray(data?.data) ? data.data : [];
-
       return items
         .map((item) => {
-          if (item.b64_json) return `data:image/png;base64,${item.b64_json}`;
+
+         if (item.b64_json) return `data:image/png;base64,${item.b64_json}`;
           if (item.url) return item.url;
           return null;
         })
         .filter(Boolean);
     }
 
+    /* ── 下载图片 ── */
+    async function downloadImage(image) {
+      const filename = `AI生图_${new Date().toISOString().replaceAll(":", "-")}.png`;
+      try {
+        const response = await fetch(image.src);
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      } catch {
+        const a = document.createElement("a");
+        a.href = image.src;
+        a.download = filename;
+        a.target = "_blank";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+    }
+
+    /* ── 执行生图 ── */
     async function runGenerate(useLast = false) {
       clearStatus("generateStatus");
 
-      const userPrompt = $("userPrompt").value.trim();
+      const userPrompt     = $("userPrompt").value.trim();
       const negativePrompt = $("negativePrompt").value.trim();
-      const count = Math.max(1, Math.min(10, Number($("imageCount").value || 1)));
-      const customSize = $("customSize").value.trim();
-      const size = selectedSize === "custom" ? customSize : selectedSize;
+      const count          = Math.max(1, Math.min(10, Number($("imageCount").value || 1)));
+      const customSize     = $("customSize").value.trim();
+      const size           = selectedSize === "custom" ? customSize : selectedSize;
 
       if (!userPrompt && !useLast) {
         showStatus("generateStatus", "请先填写提示词。", "error");
         return;
       }
-
       if (!size && !useLast) {
         showStatus("generateStatus", "请选择图片比例或填写自定义尺寸。", "error");
         return;
       }
-
       if (useLast && !lastGenerationPayload) {
         showStatus("generateStatus", "还没有可重新生成的记录，请先生成一次。", "error");
         return;
@@ -933,23 +895,22 @@ ${negativePrompt.trim()}`;
         useLast && lastGenerationPayload
           ? lastGenerationPayload
           : {
-              prompt:
-buildFinalPrompt(userPrompt, negativePrompt),
-              n: count,
+              prompt:         buildFinalPrompt(userPrompt, negativePrompt),
+              n:              count,
               size,
-              imageFile: currentInputImage,
-              visiblePrompt: userPrompt,
+              imageFile:      currentInputImage,
+              visiblePrompt:  userPrompt,
               negativePrompt
             };
 
       lastGenerationPayload = payload;
 
-      $("generateBtn").disabled = true;
+      $("generateBtn").disabled   = true;
       $("regenerateBtn").disabled = true;
       showStatus("generateStatus", "正在生成图片，请稍等...", "warn");
 
       try {
-        const data = await generateImages(payload);
+        const data      = await generateImages(payload);
         const imageUrls = normalizeImageResponse(data);
 
         if (!imageUrls.length) {
@@ -957,78 +918,26 @@ buildFinalPrompt(userPrompt, negativePrompt),
         }
 
         generatedImages = imageUrls.map((src) => ({
-          id: crypto.randomUUID(),
+          id:             crypto.randomUUID(),
           src,
-          prompt: payload.visiblePrompt || userPrompt,
+          prompt:         payload.visiblePrompt || userPrompt,
           negativePrompt: payload.negativePrompt || negativePrompt,
-          size: payload.size,
-          createdAt: new Date().toISOString()
+          size:           payload.size,
+          createdAt:      new Date().toISOString()
         }));
 
-async function downloadImage(image) {
-  const filename = `AI生图_${new Date().toISOString().replaceAll(":", "-")}.png`;
-
-  try {
-    const response = await fetch(image.src);
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-
-    URL.revokeObjectURL(url);
-  } catch {
-    const a = document.createElement("a");
-    a.href = image.src;
-    a.download = filename;
-    a.target = "_blank";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  }
-}
         renderResults();
         showStatus("generateStatus", `生成成功，共 ${generatedImages.length} 张。`, "success");
       } catch (error) {
         showStatus("generateStatus", error.message || String(error), "error");
       } finally {
-        $("generateBtn").disabled = false;
+        $("generateBtn").disabled   = false;
         $("regenerateBtn").disabled = false;
       }
     }
 
+    /* ── 渲染生成结果 ── */
     function renderResults() {
-  const gallery = $("resultGallery");
-  gallery.innerHTML = "";
-
-  generatedImages.forEach((image) => {
-    const card = document.createElement("article");
-    card.className = "image-card";
-    card.innerHTML = `
-      <img src="${image.src}" alt="生成图片">
-      <div class="image-meta">
-        <small>${escapeHtml(image.prompt || "未填写提示词")}</small>
-        <small>尺寸：${escapeHtml(image.size || "未知")}</small>
-        <button class="ok" data-action="save">保存到存档</button>
-        <button data-action="download">下载图片</button>
-      </div>
-    `;
-
-    card.querySelector('[data-action="save"]').addEventListener("click", () => {
-      saveImageToArchive(image);
-    });
-
-    card.querySelector('[data-action="download"]').addEventListener("click", () => {
-      downloadImage(image);
-    });
-
-    gallery.appendChild(card);
-  });
-}
       const gallery = $("resultGallery");
       gallery.innerHTML = "";
 
@@ -1040,18 +949,17 @@ async function downloadImage(image) {
           <div class="image-meta">
             <small>${escapeHtml(image.prompt || "未填写提示词")}</small>
             <small>尺寸：${escapeHtml(image.size || "未知")}</small>
-            <button class="ok">保存</button>
+            <button class="ok" data-action="save">保存到存档</button>
+            <button data-action="download">下载图片</button>
           </div>
         `;
-
-        card.querySelector("button").addEventListener("click", () => {
-          saveImageToArchive(image);
-        });
-
+        card.querySelector('[data-action="save"]').addEventListener("click", () => saveImageToArchive(image));
+        card.querySelector('[data-action="download"]').addEventListener("click", () => downloadImage(image));
         gallery.appendChild(card);
       });
     }
 
+    /* ── 存档读写 ── */
     function getArchive() {
       return JSON.parse(localStorage.getItem("aiImageArchive") || "[]");
     }
@@ -1070,32 +978,24 @@ async function downloadImage(image) {
 
     function saveImageToArchive(image) {
       const archive = getArchive();
-      archive.unshift({
-        ...image,
-        savedAt: new Date().toISOString()
-      });
-
+      archive.unshift({ ...image, savedAt: new Date().toISOString() });
       setArchive(archive);
       showStatus("generateStatus", "已保存到存档区。", "success");
     }
 
     function moveToTrash(id) {
       const archive = getArchive();
-      const target = archive.find((item) => item.id === id);
-
+      const target  = archive.find((item) => item.id === id);
       if (!target) return;
-
       setArchive(archive.filter((item) => item.id !== id));
       setTrash([{ ...target, trashedAt: new Date().toISOString() }, ...getTrash()]);
       renderArchive();
     }
 
     function restoreFromTrash(id) {
-      const trash = getTrash();
+      const trash  = getTrash();
       const target = trash.find((item) => item.id === id);
-
       if (!target) return;
-
       setTrash(trash.filter((item) => item.id !== id));
       setArchive([{ ...target, restoredAt: new Date().toISOString() }, ...getArchive()]);
       renderArchive();
@@ -1103,58 +1003,12 @@ async function downloadImage(image) {
 
     function deleteForever(id) {
       if (!confirm("确定要彻底删除这张图片吗？此操作无法恢复。")) return;
-
       setTrash(getTrash().filter((item) => item.id !== id));
       renderArchive();
     }
 
+    /* ── 渲染存档/回收站列表 ── */
     function renderImageList(container, items, mode) {
-  container.innerHTML = "";
-
-  if (!items.length) {
-    container.innerHTML = `<div class="empty">${mode === "archive" ? "暂无存档图片" : "回收站为空"}</div>`;
-    return;
-  }
-
-  items.forEach((image) => {
-    const card = document.createElement("article");
-    card.className = "image-card";
-
-    const buttons =
-      mode === "archive"
-        ? `
-          <button data-action="download">下载图片</button>
-          <button class="danger" data-action="trash">删除</button>
-        `
-        : `
-          <button data-action="download">下载图片</button>
-          <button class="ok" data-action="restore">恢复</button>
-          <button class="danger" data-action="delete">彻底删除</button>
-        `;
-
-    card.innerHTML = `
-      <img src="${image.src}" alt="存档图片">
-      <div class="image-meta">
-        <small>${escapeHtml(image.prompt || "未填写提示词")}</small>
-        <small>尺寸：${escapeHtml(image.size || "未知")}</small>
-        ${buttons}
-      </div>
-    `;
-
-    card.querySelectorAll("button").forEach((button) => {
-      button.addEventListener("click", () => {
-        const action = button.dataset.action;
-
-        if (action === "download") downloadImage(image);
-        if (action === "trash") moveToTrash(image.id);
-        if (action === "restore") restoreFromTrash(image.id);
-        if (action === "delete") deleteForever(image.id);
-      });
-    });
-
-    container.appendChild(card);
-  });
-}
       container.innerHTML = "";
 
       if (!items.length) {
@@ -1168,8 +1022,12 @@ async function downloadImage(image) {
 
         const buttons =
           mode === "archive"
-            ? `<button class="danger" data-action="trash">删除</button>`
+            ? `
+              <button data-action="download">下载图片</button>
+              <button class="danger" data-action="trash">删除</button>
+            `
             : `
+              <button data-action="download">下载图片</button>
               <button class="ok" data-action="restore">恢复</button>
               <button class="danger" data-action="delete">彻底删除</button>
             `;
@@ -1186,10 +1044,10 @@ async function downloadImage(image) {
         card.querySelectorAll("button").forEach((button) => {
           button.addEventListener("click", () => {
             const action = button.dataset.action;
-
-            if (action === "trash") moveToTrash(image.id);
-            if (action === "restore") restoreFromTrash(image.id);
-            if (action === "delete") deleteForever(image.id);
+            if (action === "download") downloadImage(image);
+            if (action === "trash")    moveToTrash(image.id);
+            if (action === "restore")  restoreFromTrash(image.id);
+            if (action === "delete")   deleteForever(image.id);
           });
         });
 
@@ -1199,45 +1057,37 @@ async function downloadImage(image) {
 
     function renderArchive() {
       renderImageList($("archiveGallery"), getArchive(), "archive");
-      renderImageList($("trashGallery"), getTrash(), "trash");
+      renderImageList($("trashGallery"),   getTrash(),   "trash");
     }
 
+    /* ── 工具函数 ── */
     function escapeHtml(value) {
       return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+        .replaceAll("&",  "&amp;")
+        .replaceAll("<",  "&lt;")
+        .replaceAll(">",  "&gt;")
+        .replaceAll('"',  "&quot;")
+        .replaceAll("'",  "&#039;");
     }
 
+    /* ── 绑定事件 ── */
     function bindEvents() {
-      document.querySelectorAll("[data-route]").forEach((button) => {
-        button.addEventListener("click", () => {
-          routeTo(button.dataset.route);
-        });
+      document.querySelectorAll("[data-route]").forEach((btn) => {
+        btn.addEventListener("click", () => routeTo(btn.dataset.route));
       });
 
-      $("modelSelect").addEventListener("change", (event) => {
-        if (event.target.value) {
-          $("modelInput").value = event.target.value;
-        }
+      $("modelSelect").addEventListener("change", (e) => {
+        if (e.target.value) $("modelInput").value = e.target.value;
       });
 
       $("fetchModels").addEventListener("click", async () => {
-        try {
-          await fetchModels();
-        } catch (error) {
-          showStatus("apiStatus", error.message || String(error), "error");
-        }
+        try { await fetchModels(); }
+        catch (error) { showStatus("apiStatus", error.message || String(error), "error"); }
       });
 
       $("testApi").addEventListener("click", async () => {
-        try {
-          await testApi();
-        } catch (error) {
-          showStatus("apiStatus", error.message || String(error), "error");
-        }
+        try { await testApi(); }
+        catch (error) { showStatus("apiStatus", error.message || String(error), "error"); }
       });
 
       $("saveApi").addEventListener("click", () => {
@@ -1256,18 +1106,15 @@ async function downloadImage(image) {
         showStatus("promptStatus", "已恢复默认系统提示词。", "success");
       });
 
-      $("imageInput").addEventListener("change", (event) => {
-        const file = event.target.files?.[0];
+      $("imageInput").addEventListener("change", (e) => {
+        const file    = e.target.files?.[0];
         currentInputImage = file || null;
-
         const preview = $("imagePreview");
-
         if (!file) {
           preview.style.display = "none";
           preview.src = "";
           return;
         }
-
         preview.src = URL.createObjectURL(file);
         preview.style.display = "block";
       });
@@ -1279,26 +1126,16 @@ async function downloadImage(image) {
         $("imagePreview").style.display = "none";
       });
 
-      $("generateBtn").addEventListener("click", () => {
-        runGenerate(false);
-      });
-
-      $("regenerateBtn").addEventListener("click", () => {
-        runGenerate(true);
-      });
+      $("generateBtn").addEventListener("click",   () => runGenerate(false));
+      $("regenerateBtn").addEventListener("click", () => runGenerate(true));
 
       document.querySelectorAll(".tab").forEach((tab) => {
         tab.addEventListener("click", () => {
-          document.querySelectorAll(".tab").forEach((item) => {
-            item.classList.remove("active");
-          });
-
+          document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
           tab.classList.add("active");
-
           const isArchive = tab.dataset.tab === "archive";
           $("archiveGallery").style.display = isArchive ? "grid" : "none";
-          $("trashGallery").style.display = isArchive ? "none" : "grid";
-
+          $("trashGallery").style.display   = isArchive ? "none" : "grid";
           renderArchive();
         });
       });
@@ -1309,6 +1146,7 @@ async function downloadImage(image) {
       });
     }
 
+    /* ── 初始化 ── */
     function init() {
       createParticles();
       applySettingsToForm();
