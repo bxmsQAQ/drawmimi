@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI生图</title>
+  <title>drawmimi</title>
   <style>
     :root {
       --bg: #000;
@@ -431,6 +431,22 @@
 
       .home-btn {
         min-height: 82px;
+      }
+
+      .actions button,
+      .image-meta button,
+      .tabs button,
+      .topbar button {
+        width: 100%;
+      }
+
+      .tabs {
+        flex-direction: column;
+      }
+
+      .preview-row input,
+      .preview-row button {
+        width: 100%;
       }
     }
   </style>
@@ -949,6 +965,32 @@ buildFinalPrompt(userPrompt, negativePrompt),
           createdAt: new Date().toISOString()
         }));
 
+async function downloadImage(image) {
+  const filename = `AI生图_${new Date().toISOString().replaceAll(":", "-")}.png`;
+
+  try {
+    const response = await fetch(image.src);
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    URL.revokeObjectURL(url);
+  } catch {
+    const a = document.createElement("a");
+    a.href = image.src;
+    a.download = filename;
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+}
         renderResults();
         showStatus("generateStatus", `生成成功，共 ${generatedImages.length} 张。`, "success");
       } catch (error) {
@@ -960,6 +1002,33 @@ buildFinalPrompt(userPrompt, negativePrompt),
     }
 
     function renderResults() {
+  const gallery = $("resultGallery");
+  gallery.innerHTML = "";
+
+  generatedImages.forEach((image) => {
+    const card = document.createElement("article");
+    card.className = "image-card";
+    card.innerHTML = `
+      <img src="${image.src}" alt="生成图片">
+      <div class="image-meta">
+        <small>${escapeHtml(image.prompt || "未填写提示词")}</small>
+        <small>尺寸：${escapeHtml(image.size || "未知")}</small>
+        <button class="ok" data-action="save">保存到存档</button>
+        <button data-action="download">下载图片</button>
+      </div>
+    `;
+
+    card.querySelector('[data-action="save"]').addEventListener("click", () => {
+      saveImageToArchive(image);
+    });
+
+    card.querySelector('[data-action="download"]').addEventListener("click", () => {
+      downloadImage(image);
+    });
+
+    gallery.appendChild(card);
+  });
+}
       const gallery = $("resultGallery");
       gallery.innerHTML = "";
 
@@ -1040,6 +1109,52 @@ buildFinalPrompt(userPrompt, negativePrompt),
     }
 
     function renderImageList(container, items, mode) {
+  container.innerHTML = "";
+
+  if (!items.length) {
+    container.innerHTML = `<div class="empty">${mode === "archive" ? "暂无存档图片" : "回收站为空"}</div>`;
+    return;
+  }
+
+  items.forEach((image) => {
+    const card = document.createElement("article");
+    card.className = "image-card";
+
+    const buttons =
+      mode === "archive"
+        ? `
+          <button data-action="download">下载图片</button>
+          <button class="danger" data-action="trash">删除</button>
+        `
+        : `
+          <button data-action="download">下载图片</button>
+          <button class="ok" data-action="restore">恢复</button>
+          <button class="danger" data-action="delete">彻底删除</button>
+        `;
+
+    card.innerHTML = `
+      <img src="${image.src}" alt="存档图片">
+      <div class="image-meta">
+        <small>${escapeHtml(image.prompt || "未填写提示词")}</small>
+        <small>尺寸：${escapeHtml(image.size || "未知")}</small>
+        ${buttons}
+      </div>
+    `;
+
+    card.querySelectorAll("button").forEach((button) => {
+      button.addEventListener("click", () => {
+        const action = button.dataset.action;
+
+        if (action === "download") downloadImage(image);
+        if (action === "trash") moveToTrash(image.id);
+        if (action === "restore") restoreFromTrash(image.id);
+        if (action === "delete") deleteForever(image.id);
+      });
+    });
+
+    container.appendChild(card);
+  });
+}
       container.innerHTML = "";
 
       if (!items.length) {
